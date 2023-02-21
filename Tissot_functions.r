@@ -295,11 +295,6 @@ c_recenter <- function(x, clon = NULL, ..., tryfix = TRUE) {
 
 # Check for valid coordinate extent. If projected coord values are Inf, 
 # remove that coordinate value from the returned list.
-# Note that ptransform is used here whereas spTransform is used for the
-# actual projection of the data layers. ptransform is used for its simplicity
-# (it returns Inf if a coordinate pair is out of a projection's bounds).
-# I'm not sure how ptransform differs from spTransform--this may require
-# some more checking.
 
 coord_check <- function(lonlat, proj.in = "+proj=latlong +ellps=WGS84",
                         proj.out){
