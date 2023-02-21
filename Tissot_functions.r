@@ -113,16 +113,15 @@ ellipse <- function(center, axes, scale=1, n=36, from=0, to=2*pi) {
 
 # NOTE: The prj() function is substituted for prj2(). It's currently
 # not used in any of the  other function
-prj <- function(z, proj.in = CRS("+proj=longlat +datum=WGS84"),
-                proj.out) {
-  z.pt <- SpatialPoints(coords=matrix(z, ncol=2), proj4string=proj.in)
-  w.pt <- spTransform(z.pt, CRS=proj.out)
-  return(w.pt@coords[1, ])
-}
+# prj <- function(z, proj.in = CRS("+proj=longlat +datum=WGS84"),
+#                 proj.out) {
+#   z.pt <- SpatialPoints(coords=matrix(z, ncol=2), proj4string=proj.in)
+#   w.pt <- spTransform(z.pt, CRS=proj.out)
+#   return(w.pt@coords[1, ])
+# }
 
 # Project x,y coord values
-prj2 <- function(x, y=NULL, proj.in = "+proj=longlat +datum=WGS84",
-                 proj.out) {
+prj2 <- function(x, y=NULL, proj.in = 4326, proj.out) {
   names1 <-  NULL
   if(is.null(y) & length(x) == 2){
     x1 <- x
@@ -130,10 +129,10 @@ prj2 <- function(x, y=NULL, proj.in = "+proj=longlat +datum=WGS84",
     x <- x1[1]
     names1 <- names(x1)
   }
-  z.pt <- SpatialPoints(coords=matrix(c(x,y), ncol=2), 
-                        proj4string=CRS(proj.in))
-  w.pt <- spTransform(z.pt, CRS=proj.out)
-  out <- w.pt@coords[1, ]
+  z.pt <-  st_sfc( st_multipoint( matrix(c(x,y), ncol=2)), crs=proj.in)
+  w.pt <- sf::st_transform(z.pt, proj.out)
+ # out <- w.pt@coords[1, ]
+  out <- sf::st_coordinates(w.pt)[,1:2]
   if (!is.null(names1) ){
     names(out) <- names1
   }
