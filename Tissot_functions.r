@@ -304,9 +304,7 @@ c_recenter <- function(x, clon = NULL, ..., tryfix = TRUE) {
 
 coord_check <- function(lonlat, proj.in = "+proj=latlong +ellps=WGS84",
                         proj.out){
-  coord.prj <- proj4::ptransform(data = lonlat/180 * pi, 
-                                 src.proj = proj.in, 
-                                 dst.proj = proj.out, silent=TRUE)
+  coord.prj <- sf::sf_project(lonlat, from = proj.in, to = proj.out)
   coord.chk <- t(apply(coord.prj[,1:2], 1, function(x) !is.infinite(x)))
   coord.bool <- apply(coord.chk, 1, function(x) as.logical(min(x)))
   lonlat[coord.bool, ]
