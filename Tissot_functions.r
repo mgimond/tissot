@@ -169,7 +169,7 @@ ti  <- function(coord, prj, proj.in = "+proj=longlat +datum=WGS84" ,
                 proj.out, scale=500000, n = 61){
   TI <- tissot(coord, prj, 
                proj.in = proj.in , 
-               proj.out = CRS(proj.out))
+               proj.out = proj.out)
   i <- indicatrix(TI, scale= scale, n=n)
   # Rounding may be needed for values approaching 0
   i <- lapply(i, round, digits=4)
@@ -183,7 +183,7 @@ ti_area  <- function(coord, prj, proj.in = "+proj=longlat +datum=WGS84" ,
                      proj.out, idx_area = TRUE){
   i <- tissot(coord, prj, 
               proj.in = proj.in , 
-              proj.out = CRS(proj.out), 
+              proj.out = proj.out, 
               idx_area = TRUE)
   return(i)
 }
