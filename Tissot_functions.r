@@ -217,7 +217,7 @@ local_TI <- function(long, lat, proj.in = "+proj=longlat +datum=WGS84",
     lines(i$axis.major, lwd=2, col=rgb(.45, 1, .45))
     lines(i$axis.minor, lwd=2, col=rgb(1, .35, .35))
   }
-  lines(i$outline, asp=1, lwd=2, col=rgb(.35, .35, 1))
+  lines(i$outline, asp=1, lwd=2, col=rgb(1, .35, .35))
   lines(i$d.lambda, lwd=2, col=rgb(.35, .35, .35), lty=3)
   lines(i$d.phi, lwd=2, col=rgb(.35, .35, .35), lty=2)
   title.out<- sprintf("Long=%0.2f, Lat=%0.3f, Area scale=%0.3f, 
