@@ -296,9 +296,8 @@ c_recenter <- function(x, clon = NULL, ..., tryfix = TRUE) {
 # Check for valid coordinate extent. If projected coord values are Inf, 
 # remove that coordinate value from the returned list.
 
-coord_check <- function(lonlat, proj.in = "+proj=latlong +ellps=WGS84",
-                        proj.out){
-  coord.prj <- sf::sf_project(lonlat, from = proj.in, to = proj.out)
+coord_check <- function(lonlat, proj.in = 4326, proj.out){
+  coord.prj <- sf::sf_project(lonlat, from = st_crs(proj.in), to = proj.out)
   coord.chk <- t(apply(coord.prj[,1:2], 1, function(x) !is.infinite(x)))
   coord.bool <- apply(coord.chk, 1, function(x) as.logical(min(x)))
   lonlat[coord.bool, ]
