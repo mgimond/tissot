@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.1.189">
+<meta name="generator" content="quarto-1.2.313">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -123,6 +123,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
   </div>
     
+  
     
   </div>
   
@@ -134,7 +135,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>When converting spatial features from a geographic coordinate system (GSC) to a projected coordinate system (PCS) one or more spatial properties may be distorted in the transformation. These properties include <strong>area</strong>, <strong>shape</strong>, <strong>distance</strong> and <strong>direction</strong> .</p>
 <p>Nicolas Tissot’s <em>indicatrix</em> is designed to quantify the level of distortion in a map projection. The idea is to project a small circle (i.e.&nbsp;small enough so that the distortion remains relatively uniform across the circle’s extent) and to measure its distorted shape on the projected map.</p>
-<p>For example, the following block of code shows the distorted circles across the continental US when presented in a Mollweide projection centered at 100°W. A custom function called draw_tissot is used to generate the map.</p>
+<p>For example, the following figure shows the distorted circles at different locations in the continental US when presented in a Mollweide projection centered in the middle on the 48 states.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="480"></p>
@@ -146,9 +147,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
-<p>The <strong>red distorted ellipse</strong> (the indicatrix) is the transformed circle in this particular projection (<code>+proj=gnom +lon_0=-110 +lat_0=30</code>). The <strong>green</strong> and <strong>red</strong> lines show the magnitude and direction of the ellipse’s major and minor axes respectively. If these axes are not equal (i.e.&nbsp;if the ellipse has a non-zero eccentricity), the projection is said <em>not</em> to be <strong>conformal</strong> at this location. These lines can also be used to assess scale distortion which can vary as a function of bearing as seen in this example. The green line shows maximum scale distortion and the red line shows minimum scale distortion–these are sometimes referred to as the <strong>principal directions</strong>. In this working example, the principal directions are 1.484 and 1.221 respectively. A scale value of <code>1</code> indicates no distortion. A value less than <code>1</code> indicates a smaller-than-true scale and a value greater than <code>1</code> indicates a greater-than-true scale.</p>
-<p>Not only can shape be distorted, but its <strong>area</strong> can be as well. The bisque colored circle at the center of the ellipse represents a <strong>base circle</strong> as represented by this gnomonic projection. It’s much smaller than the indicatrix. The indicatrix is 1.813 times greater than the base circle. In other words, an area will be exaggerated 1.813 times at this location given this gnomonic projection.</p>
-<p>Other features of this indicatrix include The <strong>north-south</strong> dashed line which is aligned with the meridian and the <strong>east-west</strong> dotted line which is aligned with the parallel. These lines are used to assess if meridians and parallels intersect at right angles.</p>
+<p>The <strong>red distorted ellipse</strong> (the indicatrix) is the transformed circle in this particular projection (+proj=moll +lon_0=-96 +x_0=0 +y_0=0 +datum=WGS84). The <strong>green</strong> and <strong>red</strong> lines show the magnitude and direction of the ellipse’s major and minor axes respectively. If these axes are not equal (i.e.&nbsp;if the ellipse has a non-zero eccentricity), the projection is said <em>not</em> to be <strong>conformal</strong> at this location. These lines can also be used to assess scale distortion which can vary as a function of bearing as seen in this example. The green line shows maximum scale distortion and the red line shows minimum scale distortion–these are sometimes referred to as the <strong>principal directions</strong>. In this working example, the principal directions are 1.33 and 0.749 respectively. A scale value of <code>1</code> indicates no distortion. A value less than <code>1</code> indicates a smaller-than-true scale and a value greater than <code>1</code> indicates a greater-than-true scale.</p>
+<p>Not only can shape be distorted, but its <strong>area</strong> can be as well. The bisque colored circle at the center of the ellipse represents a <strong>base circle</strong> as represented by this Mollweide projection. It’s much smaller than the indicatrix. The indicatrix is 0.997 times greater than the base circle. In other words, an area will be exaggerated 0.997 times at this location given this projection.</p>
+<p>Other features of this indicatrix include The <strong>north-south</strong> grey line which is aligned with the meridian and the <strong>east-west</strong> grey line which is aligned with the parallel. These lines are used to assess if meridians and parallels intersect at right angles.</p>
 </section>
 <section id="generating-tissot-circles" class="level2">
 <h2 class="anchored" data-anchor-id="generating-tissot-circles">Generating Tissot circles</h2>
@@ -157,11 +158,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>A group of functions are available on the github website and can be sourced via:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rgdal)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load functions used in this tutorial</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"https://raw.githubusercontent.com/mgimond/tissot/master/Tissot_functions.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load functions used in this tutorial</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"https://raw.githubusercontent.com/mgimond/tissot/master/Tissot_functions.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This tutorial will also make use of a few base layers used as a reference.</p>
 <div class="cell">
@@ -176,7 +176,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="defining-a-few-projections" class="level3">
 <h3 class="anchored" data-anchor-id="defining-a-few-projections">Defining a few projections</h3>
-<p>If you are not familiar with R’s coordinate system environment, you might want to skim through <a href="https://mgimond.github.io/Spatial/coordinate-systems-in-r.html">this web site</a>. In this next chunk of code, we’ll create a few projection objects for use later in this tutorial.</p>
+<p>In this next chunk of code, we’ll create a few projection objects for use later in this tutorial.</p>
+<blockquote class="blockquote">
+<p>Note that PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that WKT format is now becoming a preferred projection format.</p>
+</blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>proj.rob    <span class="ot">&lt;-</span> <span class="st">"+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84"</span> <span class="co"># Robinson</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>proj.aea    <span class="ot">&lt;-</span> <span class="st">"+proj=aea +lat_1=30 +lat_2=45 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"</span> <span class="co"># Equal area conic</span></span>
@@ -192,9 +195,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>proj.gnom   <span class="ot">&lt;-</span> <span class="st">"+proj=gnom +lon_0=-100 +lat_0=30"</span> <span class="co"># Gnomonic</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>proj.lcc    <span class="ot">&lt;-</span> <span class="st">"+proj=lcc +lat_1=33 +lat_2=45 +lat_0=39 +lon_0=-96 +datum=NAD83"</span> <span class="co"># USA Lambert Conformal</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We’ll also define the input coordinate system used throughout this exercise. This CS will be used to define the lat/long values of the TI centers.</p>
+<p>We’ll also define the input coordinate system used throughout this exercise (WGS 1984 GCS). This CS will be used to define the lat/long values of the TI centers.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>proj.in <span class="ot">&lt;-</span> <span class="dv">4326</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>proj.in <span class="ot">&lt;-</span> <span class="dv">4326</span> <span class="co"># EPSG code for WGS 1984 GCS</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="mercator-projection-indicatrix" class="level3">
@@ -227,22 +230,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>tsf$lam</code> The parallel (polyline)</li>
 <li><code>tsf$phi</code> The meridian (polyline)</li>
 </ul>
-<p>Finally, we’ll plot the ellipses using the <code>tmap</code> package.</p>
+<p>Finally, we’ll plot the ellipses using the <code>ggplot2</code> package.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> world, <span class="at">fill =</span> <span class="st">"bisque"</span>, <span class="at">col =</span> <span class="st">"grey20"</span>) <span class="sc">+</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>world.merc <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(world, proj.merc) <span class="co"># Project world map</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world.merc, <span class="at">fill =</span> <span class="st">"bisque"</span>, <span class="at">col =</span> <span class="st">"grey20"</span>) <span class="sc">+</span> </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_sf</span>(<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">18800000</span>,<span class="dv">18800000</span>), <span class="at">crs =</span> proj.merc) <span class="sc">+</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="480"></p>
+<p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="576"></p>
 </div>
 </div>
-<p>The Mercator projection is conformal in that the shape of the circle remains a circle. Also, its lines of longitude and latitude remain at right angles across the entire map extent. Its area and scale, however, is heavily distorted as one approaches the poles.</p>
+<p>The Mercator projection is conformal in that the shape of the circle remains a circle. Also, its lines of longitude and latitude remain at right angles across the entire map extent. Its area and scale, however, are heavily distorted as one approaches the poles.</p>
 <p>A separate function, <code>TI_local()</code> is available that allows you to explore the indicatrix in more detail at a single point location. For example, to explore the Mercator distortion at a location in central Maine (USA), type:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ti.maine <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="fl">69.5</span>, <span class="at">lat =</span> <span class="fl">44.5</span>, <span class="at">proj.out =</span> proj.merc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -269,9 +275,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="custom-function" class="level3">
-<h3 class="anchored" data-anchor-id="custom-function">Custom function</h3>
-<p>Going forward, we will rerun many of the code chunks executed earlier in this exercise. To reduce code clutter going forward, we will create a custom function that will take as input projection type (<code>proj.out</code>) and tissot center locations.</p>
+<section id="cretaing-a-custom-function" class="level3">
+<h3 class="anchored" data-anchor-id="cretaing-a-custom-function">Cretaing a custom function</h3>
+<p>Going forward, we will rerun many of the code chunks executed earlier in this exercise. To reduce code clutter, we will create a custom function that will take as input projection type (<code>proj.out</code>) and tissot center locations.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sf_use_s2</span>(<span class="cn">FALSE</span>) </span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ti.out <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">proj.in =</span> proj.in, proj.out, lat, lon, <span class="at">bmap =</span> world, </span>
@@ -284,30 +290,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(plot <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Re-project the world</span></span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    bmap.prj <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(bmap, <span class="at">crs =</span> proj.out, <span class="at">check =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create graticule</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># grt &lt;- st_graticule(crs = proj.in, lon = grt.lon, lat = grt.lat)</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> bmap.prj, <span class="at">fill =</span> <span class="st">"bisque"</span>, <span class="at">col =</span> <span class="st">"grey20"</span>) <span class="sc">+</span> </span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_bw</span>()</span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span>{</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(tsf)</span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> bmap.prj, <span class="at">fill =</span> <span class="st">"bisque"</span>, <span class="at">col =</span> <span class="st">"grey20"</span>) <span class="sc">+</span> </span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_bw</span>()</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span>{</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(tsf)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="equal-area-cylindrical-projection" class="level3">
 <h3 class="anchored" data-anchor-id="equal-area-cylindrical-projection">Equal area cylindrical projection</h3>
 <p>Next, we’ll explore another cylindrical coordinate system that, unlike the Mercator projection, preserves area.</p>
-<p>We’ll run the same chunks of code used in the last section, but we’ll replace all references to the output projected coordinate system with the <code>proj.cea</code> projection object.</p>
+<p>We’ll run the same code chunks used in the last section, but we’ll replace all references to the output projected coordinate system with the <code>proj.cea</code> projection object.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define point coordinates for TI polygons</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">80</span>, <span class="dv">80</span>, <span class="at">by =</span> 20L)</span>
@@ -747,7 +749,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
     setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
@@ -783,24 +802,42 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-    tippyHover(ref, function() {
-      var popup = window.document.createElement('div');
-      cites.forEach(function(cite) {
-        var citeDiv = window.document.createElement('div');
-        citeDiv.classList.add('hanging-indent');
-        citeDiv.classList.add('csl-entry');
-        var biblioDiv = window.document.getElementById('ref-' + cite);
-        if (biblioDiv) {
-          citeDiv.innerHTML = biblioDiv.innerHTML;
-        }
-        popup.appendChild(citeDiv);
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
       });
-      return popup.innerHTML;
-    });
+    }
   }
 });
 </script>
