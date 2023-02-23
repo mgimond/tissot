@@ -19,7 +19,7 @@ When converting spatial features from a geographic coordinate system (GSC) to a 
 
 Nicolas Tissot's *indicatrix* is designed to quantify the level of distortion in a map projection. The idea is to project a small circle (i.e. small enough so that the distortion remains relatively uniform across the circle's extent) and to measure its distorted shape on the projected map.
 
-For example, the following figure shows the distorted circles at different locations in the continental US when presented in a Mollweide projection centered in the middle on the 48 states. 
+For example, the following figure shows the distorted circles at different locations in the continental US when presented in a Mollweide projection centered in the middle on the 48 states.
 
 ```{r echo=FALSE, fig.height=4, fig.width=5}
 library(sf)
@@ -76,7 +76,7 @@ tsf <- tissot_sf(i.lst, proj.out)
 
 ```
 
-Let's explore a Tissot indicatrix (TI) in more detail. 
+Let's explore a Tissot indicatrix (TI) in more detail.
 
 ```{r echo=FALSE, fig.height=4, fig.width=5}
 #proj.out <- "+proj=gnom +lon_0=-110 +lat_0=30"
@@ -117,9 +117,11 @@ st_crs(us) <- us.crs
 
 ### Defining a few projections
 
-In this next chunk of code, we'll create a few projection objects for use later in this tutorial. 
+In this next chunk of code, we'll create a few projection objects for use later in this tutorial.
 
-> Note that PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that WKT format is now becoming a preferred projection format.
+> Note 1: In this tutorial, PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that WKT format is now becoming a preferred projection format.
+
+> Note 2: Modifying a projection's tangent or secant coordinate values may result in distorted base maps and/or errors in the underlying modfied geometry.
 
 ```{r}
 proj.rob    <- "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84" # Robinson
@@ -188,8 +190,8 @@ Finally, we'll plot the ellipses using the `ggplot2` package.
 world.merc <- st_transform(world, proj.merc) # Project world map
 
 ggplot() + 
-  geom_sf(data = world.merc, fill = "bisque", col = "grey20") + 
-  geom_sf(data = tsf$base, fill = NA, col = "grey50") +
+  geom_sf(data = world.merc, fill = "grey90", col = "white") + 
+  geom_sf(data = tsf$base, fill = "bisque", col = "grey50") +
   geom_sf(data = tsf$ind,  col="red", fill = NA) +
   geom_sf(data = tsf$mina,  col="red", fill = NA) +
   geom_sf(data = tsf$maja,  col="green", fill = NA) +
@@ -203,7 +205,7 @@ The Mercator projection is conformal in that the shape of the circle remains a c
 
 A separate function, `TI_local()` is available that allows you to explore the indicatrix in more detail at a single point location. For example, to explore the Mercator distortion at a location in central Maine (USA), type:
 
-```{r}
+```{r fig.height=4, fig.width=5}
 ti.maine <- local_TI(long = -69.5, lat = 44.5, proj.out = proj.merc)
 ```
 
@@ -220,7 +222,7 @@ ti.maine$max.scale
 ti.maine$min.scale
 ```
 
-### Cretaing a custom function
+### Creating a custom function
 
 Going forward, we will rerun many of the code chunks executed earlier in this exercise. To reduce code clutter, we will create a custom function that will take as input projection type (`proj.out`) and tissot center locations.
 
@@ -238,8 +240,8 @@ ti.out <- function(proj.in = proj.in, proj.out, lat, lon, bmap = world,
     bmap.prj <- st_transform(bmap, crs = proj.out, check = TRUE)
 
     ggplot() + 
-      geom_sf(data = bmap.prj, fill = "bisque", col = "grey20") + 
-      geom_sf(data = tsf$base, fill = NA, col = "grey50") +
+      geom_sf(data = bmap.prj, fill = "grey90", col = "white") + 
+      geom_sf(data = tsf$base, fill = "bisque", col = "grey50") +
       geom_sf(data = tsf$ind,  col="red", fill = NA) +
       geom_sf(data = tsf$mina,  col="red", fill = NA) +
       geom_sf(data = tsf$maja,  col="green", fill = NA) +
@@ -258,7 +260,7 @@ Next, we'll explore another cylindrical coordinate system that, unlike the Merca
 
 We'll run the same code chunks used in the last section, but we'll replace all references to the output projected coordinate system with the `proj.cea` projection object.
 
-```{r fig.height=5, fig.width=8}
+```{r fig.height=2.3, fig.width=7}
 # Define point coordinates for TI polygons
 lat <- seq(-80, 80, by = 20L)
 lon <- seq(-170, 170, by = 34L) 
@@ -269,7 +271,7 @@ ti.out(proj.out = proj.cea, lat = lat, lon = lon)
 
 Note the flattening of features as one progresses pole-ward. This compensates for the east-west stretching of features nearer the poles. Let's check an indicatrix up close at the 44.5° latitude.
 
-```{r}
+```{r fig.height=4, fig.width=5}
 ti.maine <- local_TI(long = -69.5, lat = 44.5, proj.out = proj.cea)
 ```
 
@@ -279,7 +281,7 @@ The area is indeed preserved, but this comes at a cost. The projection is not co
 
 Let's explore another family of projections: an orthographic projection.
 
-```{r fig.height=4, fig.width=6}
+```{r fig.height=5, fig.width=6}
 lat <- seq(0, 60, by = 20L)
 lon <- seq(-120, 0, by = 40L)
 
@@ -288,13 +290,13 @@ ti.out(proj.out = proj.ortho1, lat = lat, lon = lon)
 
 This particular coordinate system has the center of the projection touching the earth's surface. As such, you expect minimal distortion at the center (here the projection is centered at -69° longitude and 45° latitude).
 
-```{r}
+```{r fig.height=4, fig.width=5}
 ti.maine <- local_TI(long = -69, lat = 45, proj.out = proj.ortho1)
 ```
 
 Distortion in area and length increases as one moves away from the projection's center as shown in the next TI centered at 0° longitude and 80° latitude.
 
-```{r fig.height=4, fig.width=6}
+```{r fig.height=4, fig.width=5}
 out <- local_TI(long = 0, lat = 80, proj.out = proj.ortho1)
 ```
 
@@ -333,11 +335,11 @@ ti_lcc$max.scale
 ti_lcc$min.scale
 ```
 
-## Generating areal scale factor raster
+## Generating areal scale factor rasters
 
 We can generate a continuous (raster) surface of areal scale values. This can prove helpful in visualizing the distortion associated with the PCS across the *whole* map extent.
 
-We'll first create a custom function
+We'll first create a custom function whereby areal scales less than one will be assigned a red hue, areal scales greater than one will be assigned a blueish hue, and scales near one will be assigned a yellow hue.
 
 ```{r raster_tissot_function}
 library(raster)
@@ -381,7 +383,7 @@ r[] <- round(i.lst,4)
 out <- ggplot()+
   geom_raster(data = as.data.frame(r, xy = TRUE), interpolate = TRUE,
               aes(x=x,y=y, fill = layer), alpha = 0.7) +
-  scale_fill_continuous(type = "viridis") +
+  scale_fill_gradient2(low = "red", midpoint = 1, mid = "yellow", high = "blue")+
   geom_sf(data = bgmap.prj, col = "black", fill = NA) +
   coord_sf(xlim = extent(r)[1:2,], ylim = extent(r)[3:4,]) +
   guides(fill = guide_colourbar(title = "Area scale"))
@@ -410,21 +412,22 @@ ur <- c(xmax = 40, ymax = 60)
 r.out(ll, ur, proj.out, plot = TRUE)
 ```
 
-This orthographic projection has single point true scale centered at 69° West and and 45° North. The areal scale fraction decreases as one moves away from the point. Given its areal and conformal distortions, this projection is not particularly useful other than to portray the earth from space as viewed by an observer.
+This orthographic projection has a true scale centered at 69° West and and 45° North (the coordinate system's custom center). The areal scale fraction decreases as one moves away from the point. Yellow hue is assigned a scale of one (i.e. minimal areal distortion). Given its areal and conformal distortions, this projection is not particularly useful other than to portray the earth as viewed by an observer in space.
 
 ### UTM projection
 
-Next, we'll modify the previous chunk of code for use with a UTM coordinate system while limiting the extent to the state of Maine (USA). This will help us visualize the north-south strips of the projection where scale is close to 1 (this location coincides with UTM's two standard lines).
+Next, we'll modify the previous chunk of code for use with a UTM coordinate system and limit the extent to the State of Maine (USA). This will help us visualize the north-south strips of the projection where scale is close to 1 (this location coincides with UTM's two standard lines).
 
 ```{r fig.height=4, fig.width=6, cache = TRUE}
-proj.out <- proj.utm19N # Converting to WKT format to avoid warning
+proj.out <- proj.utm19N 
 ll <- c(xmin = -73, ymin = 43)
 ur <- c(xmax = -65, ymax = 48)
 
-r.out(ll, ur, proj.out, bgmap = us) # Map with US outline
+r.out(ll, ur, proj.out, bgmap = us) + # Map with US outline 
+  geom_vline( xintercept = c(680000,320000), linetype = 2 ) # Add standard parallels
 ```
 
-The UTM projection adopts a secant projection whereby the cylindrical projection *contacts* the earth at two standard lines (they don't quite follow meridians). As such, the areal scale between the two standard lines will be just under 1 at the projection's central meridian (69°W). The standard lines are 360 km apart of one another along the equator.
+The UTM projection adopts a [secant projection](https://mgimond.github.io/Spatial/chp09_0.html#cylindrical-projection) whereby the cylindrical projection *contacts* the earth at two standard lines (shown as dashed lines in the above figure). As such, the areal scale at the two standard lines is close to one whereas at the projection's central meridian (69°W). The standard lines are about 360 km from one another. Note that the standard parallels do not follow meridians.
 
 ### Plate Carrée projection
 
@@ -438,7 +441,7 @@ ur <- c(xmax = 170, ymax = 80)
 r.out(ll, ur, proj.out) 
 ```
 
-You'll note that the scale increases quite a bit as one moves away from the equator.
+The scale is nearly unity at the equator and increases as one moves poleword.
 
 ### Equal-area projection
 
@@ -451,9 +454,9 @@ ur <- c(xmax = 170, ymax = 85)
 r.out(ll, ur, proj.out)
 ```
 
-The map makes it clear that the areal scale remains true (to at least 3 decimal places) for much of the earth's extent.
+The map makes it clear that the areal scale remains true (to at least 3 decimal places) for much of the earth's extent!
 
-# Combining indicattrix with areal scale factor raster
+# Combining indicatrix with areal scale factor raster
 
 Next, we'll overlap indicatrix ellipses with areal scale factor rasters. This will allow us to view both distortion on shape and length scale as well as area.
 
@@ -474,6 +477,7 @@ lat <- seq(-80, 80, by = 20L)
 lon <- seq(-150, 150, by = 35L)
 tsf <- ti.out(proj.out = proj.out, lat = lat, lon = lon, plot = FALSE)
 
+# Add indicatrix to map
 out.rast + 
       geom_sf(data = tsf$base, fill = NA, col = "grey50") +
       geom_sf(data = tsf$ind,  col="red", fill = NA) +
@@ -484,11 +488,11 @@ out.rast +
 
 ```
 
-While the area scale remains true across the map's extent, its shape clearly does not. Distortion of north-south and east-west scales is needed to ensure that the area is preserved.
+While the area scale remains true across the map's extent, its shape clearly does not. Distortion of north-south and east-west scales is needed to ensure that the area is preserved near the poles.
 
 ## Gnomonic projection
 
-One interesting coordinate system is the gnomonic projection. This projection is unique in that great circles (shortest distance on an ellipsoid) map to a straight line. In other words, the shortest distance between to points on this projected map is the true great circle distance. The following map is that of a gnomonic projection centered at 30° North and 100° West.
+One interesting coordinate system is the gnomonic projection. This projection is unique in that great circles (shortest distance on an ellipsoid) from the center of the projection map to a straight line. In other words, the shortest distance between to points on this projected map is the true great circle distance. The following map is that of a gnomonic projection centered at 30° North and 100° West.
 
 ```{r fig.height=7, fig.width=6, cache = TRUE}
 proj.out <- proj.gnom 
@@ -503,6 +507,7 @@ lat <- seq(5, 65, by = 10L)
 lon <- seq(-120, -70, by = 20L)
 tsf <- ti.out(proj.out = proj.out, lat = lat, lon = lon, plot = FALSE)
 
+# Add indicatrix to map
 out.rast + 
       geom_sf(data = tsf$base, fill = NA, col = "grey50") +
       geom_sf(data = tsf$ind,  col="red", fill = NA) +
@@ -514,47 +519,13 @@ out.rast +
                ylim = st_bbox(tsf$base)[c(2,4)])
 ```
 
-## Equal-area conical projection
-
-```{r fig.height=8, fig.width=11, cache = TRUE, eval = FALSE}
-proj.out <- proj.aea
-ll  <- c(xmin = -140, ymin = 10)
-ur  <- c(xmax = -40, ymax = 50)
- 
-# Generate raster output
-out.rast <- r.out(ll, ur, proj.out)
-
-# Generate Tissot indicatrix
-lat <- seq(30, 50, by = 10L)
-lon <- seq(-120, -70, by = 20L)
-tsf <- ti.out(proj.out = proj.out, lat = lat, lon = lon, plot = FALSE)
-
-out.rast + 
-      geom_sf(data = tsf$base, fill = NA, col = "grey50") +
-      geom_sf(data = tsf$ind,  col="red", fill = NA) +
-      geom_sf(data = tsf$mina,  col="red", fill = NA) +
-      geom_sf(data = tsf$maja,  col="green", fill = NA) +
-      geom_sf(data = tsf$lam,  col="grey50", fill = NA) +
-      geom_sf(data = tsf$phi,  col="grey80", fill = NA) +
-      coord_sf(xlim = st_bbox(tsf$base)[c(1,3)], 
-               ylim = st_bbox(tsf$base)[c(2,4)])
-
-```
-
-Area is well preserved across this extent. But if you look closely, length scale becomes slightly distorted as one moves away from the two standard lines (lines of exact scale). We can take a closer look at one of these indicatrices
-
-```{r  fig.height=4, fig.width=4, cache = TRUE}
-ti.aea <- local_TI(-110, 10, proj.out = proj.out) 
-```
-
-At a latitude of 10° (20° of the southern-most standard line) the areal scale remains unity, the length scale varies from `r round(ti.aea$min.scale,3)` to `r round(ti.aea$max.scale,3)` 1.086 depending on the direction the distance is measured at.
 
 ## Equidistance conical projection
 
 If distance is an important spatial property for your analysis, you can adopt an equidistant projection.
 
-```{r fig.height=3, fig.width=11, cache = TRUE, eval = FALSE}
-proj.out <- proj.eqdc
+```{r fig.height=5, fig.width=11, cache = TRUE}
+proj.out <- proj.eqdc 
 ll  <- c(xmin = -130, ymin = 20)
 ur  <- c(xmax = -60, ymax = 60)
 
@@ -578,18 +549,16 @@ out.rast +
 
 ```
 
-Recall that the green lines represent the largest scale distortion specified angle and the red line the largest measurement made at that location at the specified angle.
+Recall that the green lines represent the largest scale measurement and the red line the smallest scale measurement. The distances seem to be consistent at all directions.
 
-We can also extract the length measurements of the principal directions from the `tsf` object.
-
-For the maximum scale distortions lengths for each TI, type:
+We can extract the length of the principal directions from the `tsf` object. For the maximum scale distortion lengths for each indicatrix, type:
 
 ```{r}
 params  <- ti.out(proj.out = proj.out, lat = lat, lon = lon, plot = FALSE)
 st_length(params$maja)
 ```
 
-The output units are those of the projection mapping units--meters in our example.
+The output units are those of the projection mapping units--meters in this example.
 
 For the minimum scale distortions lengths for each TI, type:
 
@@ -597,7 +566,13 @@ For the minimum scale distortions lengths for each TI, type:
 st_length(params$mina)
 ```
 
-To preserve distance scales across the map's extent, area scale needs to be compromised. The scale ranges from 0.98 to 1.16 within the bounds defined by `ll` and `ur.`
+To preserve distance scales across the map's extent, area scale needs to be compromised. Its values can be extracted as follows:
+
+```{r}
+params$area
+```
+
+The area scale ranges from `r round(min(params$area),2)` to `r round(max(params$area),2)` within the bounds defined by `ll` and `ur.`
 
 ------------------------------------------------------------------------
 
