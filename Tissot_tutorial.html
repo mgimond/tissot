@@ -101,10 +101,41 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#generating-tissot-circles" id="toc-generating-tissot-circles" class="nav-link" data-scroll-target="#generating-tissot-circles">Generating Tissot circles</a>
+  <ul class="collapse">
+  <li><a href="#loading-a-few-functions-and-base-layers" id="toc-loading-a-few-functions-and-base-layers" class="nav-link" data-scroll-target="#loading-a-few-functions-and-base-layers">Loading a few functions and base layers</a></li>
+  <li><a href="#defining-a-few-projections" id="toc-defining-a-few-projections" class="nav-link" data-scroll-target="#defining-a-few-projections">Defining a few projections</a></li>
+  <li><a href="#mercator-projection-indicatrix" id="toc-mercator-projection-indicatrix" class="nav-link" data-scroll-target="#mercator-projection-indicatrix">Mercator projection indicatrix</a></li>
+  <li><a href="#creating-a-custom-function" id="toc-creating-a-custom-function" class="nav-link" data-scroll-target="#creating-a-custom-function">Creating a custom function</a></li>
+  <li><a href="#equal-area-cylindrical-projection" id="toc-equal-area-cylindrical-projection" class="nav-link" data-scroll-target="#equal-area-cylindrical-projection">Equal area cylindrical projection</a></li>
+  <li><a href="#earth-from-space-planar-projection" id="toc-earth-from-space-planar-projection" class="nav-link" data-scroll-target="#earth-from-space-planar-projection">Earth-from-space planar projection</a></li>
+  <li><a href="#usa-contiguous-lambert-conformal-conic-projection" id="toc-usa-contiguous-lambert-conformal-conic-projection" class="nav-link" data-scroll-target="#usa-contiguous-lambert-conformal-conic-projection">USA Contiguous Lambert Conformal Conic Projection</a></li>
+  </ul></li>
+  <li><a href="#generating-areal-scale-factor-rasters" id="toc-generating-areal-scale-factor-rasters" class="nav-link" data-scroll-target="#generating-areal-scale-factor-rasters">Generating areal scale factor rasters</a>
+  <ul class="collapse">
+  <li><a href="#orthographic-projection" id="toc-orthographic-projection" class="nav-link" data-scroll-target="#orthographic-projection">Orthographic projection</a></li>
+  <li><a href="#utm-projection" id="toc-utm-projection" class="nav-link" data-scroll-target="#utm-projection">UTM projection</a></li>
+  <li><a href="#plate-carrée-projection" id="toc-plate-carrée-projection" class="nav-link" data-scroll-target="#plate-carrée-projection">Plate Carrée projection</a></li>
+  <li><a href="#equal-area-projection" id="toc-equal-area-projection" class="nav-link" data-scroll-target="#equal-area-projection">Equal-area projection</a></li>
+  </ul></li>
+  <li><a href="#combining-indicatrix-with-areal-scale-factor-raster" id="toc-combining-indicatrix-with-areal-scale-factor-raster" class="nav-link" data-scroll-target="#combining-indicatrix-with-areal-scale-factor-raster">Combining indicatrix with areal scale factor raster</a>
+  <ul class="collapse">
+  <li><a href="#equal-area-projection-1" id="toc-equal-area-projection-1" class="nav-link" data-scroll-target="#equal-area-projection-1">Equal-area projection</a></li>
+  <li><a href="#gnomonic-projection" id="toc-gnomonic-projection" class="nav-link" data-scroll-target="#gnomonic-projection">Gnomonic projection</a></li>
+  <li><a href="#equidistance-conical-projection" id="toc-equidistance-conical-projection" class="nav-link" data-scroll-target="#equidistance-conical-projection">Equidistance conical projection</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -177,15 +208,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3 class="anchored" data-anchor-id="defining-a-few-projections">Defining a few projections</h3>
 <p>In this next chunk of code, we’ll create a few projection objects for use later in this tutorial.</p>
 <blockquote class="blockquote">
-<p>Note 1: In this tutorial, PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that WKT format is now becoming a preferred projection format.</p>
+<p>Note 1: PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that WKT format is now becoming a preferred projection format.</p>
 </blockquote>
 <blockquote class="blockquote">
-<p>Note 2: Modifying a projection’s tangent or secant coordinate values may result in distorted base maps and/or errors in the underlying modfied geometry.</p>
+<p>Note 2: Modifying a projection’s tangent or secant coordinate values may result in distorted base maps and/or errors in the underlying modified geometry.</p>
 </blockquote>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>proj.rob    <span class="ot">&lt;-</span> <span class="st">"+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84"</span> <span class="co"># Robinson</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>proj.aea    <span class="ot">&lt;-</span> <span class="st">"+proj=aea +lat_1=30 +lat_2=45 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"</span> <span class="co"># Equal area conic</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>proj.eqdc   <span class="ot">&lt;-</span> <span class="st">"+proj=eqdc +lat_0=37.5 +lon_0=-96 +lat_1=30 +lat_2=45 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"</span> <span class="co"># Equidistant conic</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>proj.eqdc   <span class="ot">&lt;-</span> <span class="st">"+proj=eqdc +lat_0=37.5 +lon_0=-96 +lat_1=30 +lat_2=45"</span> <span class="co"># Equidistant conic</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>proj.merc   <span class="ot">&lt;-</span> <span class="st">"+proj=merc +ellps=WGS84"</span> <span class="co"># Mercator</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>proj.ortho1 <span class="ot">&lt;-</span> <span class="st">"+proj=ortho +lon_0=-69 +lat_0=45 +ellps=WGS84"</span> <span class="co"># Planar projection</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>proj.utm19N <span class="ot">&lt;-</span> <span class="st">"+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"</span> <span class="co"># UTM NAD83</span></span>
@@ -250,7 +281,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="576"></p>
 </div>
 </div>
-<p>The Mercator projection is conformal in that the shape of the circle remains a circle. Also, its lines of longitude and latitude remain at right angles across the entire map extent. Its area and scale, however, are heavily distorted as one approaches the poles.</p>
+<p>The Mercator projection is conformal in that the shape of the circle remains a circle. Also, its lines of longitude and latitude remain at right angles across the entire map extent. Its area, however, is heavily distorted as one approaches the poles (recall that the red circles represent the <em>true</em> circle and the bisque colored circles are the projection’s rendering of the circle in its own coordinate system).</p>
 <p>A separate function, <code>TI_local()</code> is available that allows you to explore the indicatrix in more detail at a single point location. For example, to explore the Mercator distortion at a location in central Maine (USA), type:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ti.maine <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="fl">69.5</span>, <span class="at">lat =</span> <span class="fl">44.5</span>, <span class="at">proj.out =</span> proj.merc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -265,7 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>[1] 1.959244</code></pre>
 </div>
 </div>
-<p>Likewise, to extract the principal direction scales, type:</p>
+<p>Likewise, to extract the principal direction (length) scales, type:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ti.maine<span class="sc">$</span>max.scale</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -344,7 +375,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="576"></p>
 </div>
 </div>
-<p>This particular coordinate system has the center of the projection touching the earth’s surface. As such, you expect minimal distortion at the center (here the projection is centered at -69° longitude and 45° latitude).</p>
+<p>This particular coordinate system has the center of the projection touching the earth’s surface at -69°W and 45°N. As such, minimal distortion will occur at the center of this projection.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ti.maine <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="dv">69</span>, <span class="at">lat =</span> <span class="dv">45</span>, <span class="at">proj.out =</span> proj.ortho1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -361,6 +392,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="usa-contiguous-lambert-conformal-conic-projection" class="level3">
 <h3 class="anchored" data-anchor-id="usa-contiguous-lambert-conformal-conic-projection">USA Contiguous Lambert Conformal Conic Projection</h3>
+<p>This next projection is designed to preserve shape within its extent.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">20</span>, <span class="dv">60</span>, <span class="at">by =</span> 20L)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="sc">-</span><span class="dv">50</span>, <span class="at">by =</span> 30L)</span>
@@ -377,7 +409,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="576"></p>
 </div>
 </div>
-<p>The TI appears circular. We can quantify the distortion in shape by extracting the angle between the parallel and meridian lines at the <code>TI</code>’s center from the <code>ti_lcc</code> object (these are shown as the two dashed lines in the <code>TI</code>). A conformal projection is one that preserves angle, so we would expect a value of 90° between the two reference lines.</p>
+<p>The TI appears circular suggestion that shape is preserved. We can quantify the distortion in shape by extracting the angle between the parallel and meridian lines at the <code>TI</code>’s center from the <code>ti_lcc</code> object (these are shown as the two dashed lines in the <code>TI</code>). A conformal projection is one that preserves angle, so we would expect a value of 90° between the two reference lines.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>ti_lcc[[<span class="dv">12</span>]][<span class="dv">3</span>]  <span class="co"># Extract the intersecting angle</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -385,7 +417,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           89.99917 </code></pre>
 </div>
 </div>
-<p>This is very close to 0. But it comes at a cost: distortions in area and length scales:</p>
+<p>This is very close to 90°. But it comes at a cost: distortions in area and length scales.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ti_lcc<span class="sc">$</span>scale.area</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -409,7 +441,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="generating-areal-scale-factor-rasters" class="level2">
 <h2 class="anchored" data-anchor-id="generating-areal-scale-factor-rasters">Generating areal scale factor rasters</h2>
 <p>We can generate a continuous (raster) surface of areal scale values. This can prove helpful in visualizing the distortion associated with the PCS across the <em>whole</em> map extent.</p>
-<p>We’ll first create a custom function whereby areal scales less than one will be assigned a red hue, areal scales greater than one will be assigned a blueish hue, and scales near one will be assigned a yellow hue.</p>
+<p>We’ll first create a custom function whereby areal scales less than one will be assigned a red hue, areal scales greater than one will be assigned a blueish hue, and scales close to one will be assigned a yellow hue.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -467,14 +499,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="orthographic-projection" class="level3">
 <h3 class="anchored" data-anchor-id="orthographic-projection">Orthographic projection</h3>
 <p>We’ll extend our analysis of the orthographic projection from the last section.</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-27_defdcdb5807878a54cbb4183077565b0">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.ortho1</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">120</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">20</span>)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">40</span>, <span class="at">ymax =</span> <span class="dv">60</span>)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create raster map (remove default graticule which is problematic for this</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># projection)</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.out, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-27_2617613fea6a41ea282867ec49e6e02b">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">120</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">20</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">40</span>, <span class="at">ymax =</span> <span class="dv">60</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create raster map (remove default graticule which is problematic for this</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># projection)</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.ortho1, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="576"></p>
 </div>
@@ -484,13 +515,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="utm-projection" class="level3">
 <h3 class="anchored" data-anchor-id="utm-projection">UTM projection</h3>
 <p>Next, we’ll modify the previous chunk of code for use with a UTM coordinate system and limit the extent to the State of Maine (USA). This will help us visualize the north-south strips of the projection where scale is close to 1 (this location coincides with UTM’s two standard lines).</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-28_a988827e3fd7d5e46ea5c6d914a70251">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.utm19N </span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">73</span>, <span class="at">ymin =</span> <span class="dv">43</span>)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="sc">-</span><span class="dv">65</span>, <span class="at">ymax =</span> <span class="dv">48</span>)</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.out, <span class="at">bgmap =</span> us) <span class="sc">+</span> <span class="co"># Map with US outline </span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>( <span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">680000</span>,<span class="dv">320000</span>), <span class="at">linetype =</span> <span class="dv">2</span> ) <span class="co"># Add standard parallels</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-28_1b145303b875d44b1dafd710ac394fd5">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">73</span>, <span class="at">ymin =</span> <span class="dv">43</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="sc">-</span><span class="dv">65</span>, <span class="at">ymax =</span> <span class="dv">48</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.utm19N, <span class="at">bgmap =</span> us) <span class="sc">+</span> <span class="co"># Map with US outline </span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>( <span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">680000</span>,<span class="dv">320000</span>), <span class="at">linetype =</span> <span class="dv">2</span> ) <span class="co"># Add standard parallels</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="576"></p>
 </div>
@@ -500,12 +530,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="plate-carrée-projection" class="level3">
 <h3 class="anchored" data-anchor-id="plate-carrée-projection">Plate Carrée projection</h3>
 <p>A popular cylindrical coordinate system adopted as a standard projection for geographic data in GIS software like ArcMap and QGIS is the Plate Carrée projection (or a derivative thereof). We’ll modify the previous chunk once again.</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-29_0a5ad96b7601fd721e961a302973db20">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.carree</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">170</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">85</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">170</span>, <span class="at">ymax =</span> <span class="dv">80</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.out) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-29_51fb5738459ac06ca414272702ddd074">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">170</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">85</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">170</span>, <span class="at">ymax =</span> <span class="dv">80</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.carree) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="960"></p>
 </div>
@@ -515,11 +543,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="equal-area-projection" class="level3">
 <h3 class="anchored" data-anchor-id="equal-area-projection">Equal-area projection</h3>
 <p>Now let’s revisit the equal area projection. The Tissot indicatrix suggested that the projection did not preserve shape in an earlier example. A single Tissot indicatrix was generated at a 45° latitude suggesting that area was unaffected. Let’s generate an areal distortion raster to explore the extent of equal area projection.</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-30_31d4ec2f24354f677f123e1723e9c0fd">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.cea</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">170</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">85</span>)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">170</span>, <span class="at">ymax =</span> <span class="dv">85</span>)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-30_2993ad366f3f64ea701979a86e3bbe04">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">170</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">85</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">170</span>, <span class="at">ymax =</span> <span class="dv">85</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">r.out</span>(ll, ur, proj.cea)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="1056"></p>
 </div>
@@ -533,27 +561,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="equal-area-projection-1" class="level2">
 <h2 class="anchored" data-anchor-id="equal-area-projection-1">Equal-area projection</h2>
 <p>We’ll continue with the last projection used (the equal area projection).</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-31_db39937a30c561167d755fe41dace2b0">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.cea </span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">170</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">85</span>)</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">170</span>, <span class="at">ymax =</span> <span class="dv">85</span>)</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate raster output</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>out.rast <span class="ot">&lt;-</span> <span class="fu">r.out</span>(ll, ur, proj.out)</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Tissot indicatrix</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">80</span>, <span class="dv">80</span>, <span class="at">by =</span> 20L)</span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="dv">150</span>, <span class="at">by =</span> 35L)</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>tsf <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.out, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Add indicatrix to map</span></span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>out.rast <span class="sc">+</span> </span>
-<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
-<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-31_48d1613ac34af36bc271811040fe36f0">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">170</span>, <span class="at">ymin =</span> <span class="sc">-</span><span class="dv">85</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="dv">170</span>, <span class="at">ymax =</span> <span class="dv">85</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>out.rast <span class="ot">&lt;-</span> <span class="fu">r.out</span>(ll, ur, proj.cea)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Tissot indicatrix</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">80</span>, <span class="dv">80</span>, <span class="at">by =</span> 20L)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">150</span>, <span class="dv">150</span>, <span class="at">by =</span> 35L)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>tsf <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.cea, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Add indicatrix to map</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>out.rast <span class="sc">+</span> </span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="1056"></p>
 </div>
@@ -563,29 +589,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="gnomonic-projection" class="level2">
 <h2 class="anchored" data-anchor-id="gnomonic-projection">Gnomonic projection</h2>
 <p>One interesting coordinate system is the gnomonic projection. This projection is unique in that great circles (shortest distance on an ellipsoid) from the center of the projection map to a straight line. In other words, the shortest distance between to points on this projected map is the true great circle distance. The following map is that of a gnomonic projection centered at 30° North and 100° West.</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-32_df28bf3e3ed1c673809d86e21dcdd02a">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.gnom </span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">130</span>, <span class="at">ymin =</span> <span class="dv">0</span>)</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="sc">-</span><span class="dv">60</span>, <span class="at">ymax =</span> <span class="dv">65</span>)</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate raster output</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>out.rast <span class="ot">&lt;-</span> <span class="fu">r.out</span>(ll, ur, proj.out)</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Tissot indicatrix</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">65</span>, <span class="at">by =</span> 10L)</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">120</span>, <span class="sc">-</span><span class="dv">70</span>, <span class="at">by =</span> 20L)</span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>tsf <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.out, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Add indicatrix to map</span></span>
-<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>out.rast <span class="sc">+</span> </span>
-<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
-<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)], </span>
-<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>               <span class="at">ylim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-32_4dcbfd0a2c3824f52efb6acf96e2a57c">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ll <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">130</span>, <span class="at">ymin =</span> <span class="dv">0</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>ur <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="sc">-</span><span class="dv">45</span>, <span class="at">ymax =</span> <span class="dv">65</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate raster output</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>out.rast <span class="ot">&lt;-</span> <span class="fu">r.out</span>(ll, ur, proj.gnom)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Tissot indicatrix</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">65</span>, <span class="at">by =</span> 10L)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">120</span>, <span class="sc">-</span><span class="dv">70</span>, <span class="at">by =</span> 20L)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>tsf <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.gnom, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Add indicatrix to map</span></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>out.rast <span class="sc">+</span> </span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)], </span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>               <span class="at">ylim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="576"></p>
 </div>
@@ -594,63 +619,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="equidistance-conical-projection" class="level2">
 <h2 class="anchored" data-anchor-id="equidistance-conical-projection">Equidistance conical projection</h2>
 <p>If distance is an important spatial property for your analysis, you can adopt an equidistant projection.</p>
-<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-33_b8356ad1dfe59d6023a6477d4ee7168a">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>proj.out <span class="ot">&lt;-</span> proj.eqdc </span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>ll  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">130</span>, <span class="at">ymin =</span> <span class="dv">20</span>)</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>ur  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="sc">-</span><span class="dv">60</span>, <span class="at">ymax =</span> <span class="dv">60</span>)</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate raster output</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>out.rast <span class="ot">&lt;-</span> <span class="fu">r.out</span>(ll, ur, proj.out)</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Tissot indicatrix</span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">30</span>, <span class="dv">50</span>, <span class="at">by=</span>10L)</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">120</span>, <span class="sc">-</span><span class="dv">70</span>, <span class="at">by=</span>20L)</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>tsf <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.out, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>out.rast <span class="sc">+</span> </span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)], </span>
-<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>               <span class="at">ylim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="Tissot_tutorial_cache/html/unnamed-chunk-33_b62fdd450ada672a36aad09cfdf35ff8">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>ll  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmin =</span> <span class="sc">-</span><span class="dv">130</span>, <span class="at">ymin =</span> <span class="dv">20</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>ur  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">xmax =</span> <span class="sc">-</span><span class="dv">60</span>, <span class="at">ymax =</span> <span class="dv">60</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate raster output</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>out.rast <span class="ot">&lt;-</span> <span class="fu">r.out</span>(ll, ur, proj.eqdc)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate Tissot indicatrix</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>lat <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">30</span>, <span class="dv">50</span>, <span class="at">by=</span>10L)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>lon <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">120</span>, <span class="sc">-</span><span class="dv">70</span>, <span class="at">by=</span>20L)</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>tsf <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.eqdc, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>out.rast <span class="sc">+</span> </span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>base, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>ind,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>mina,  <span class="at">col=</span><span class="st">"red"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>maja,  <span class="at">col=</span><span class="st">"green"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>lam,  <span class="at">col=</span><span class="st">"grey50"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_sf</span>(<span class="at">data =</span> tsf<span class="sc">$</span>phi,  <span class="at">col=</span><span class="st">"grey80"</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">coord_sf</span>(<span class="at">xlim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)], </span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">ylim =</span> <span class="fu">st_bbox</span>(tsf<span class="sc">$</span>base)[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="1056"></p>
 </div>
 </div>
-<p>Recall that the green lines represent the largest scale measurement and the red line the smallest scale measurement. The distances seem to be consistent at all directions.</p>
-<p>We can extract the length of the principal directions from the <code>tsf</code> object. For the maximum scale distortion lengths for each indicatrix, type:</p>
+<p>This projection adopts a secant case in that two standard parallel are used to define where the projection makes contact with the underlying spheroid. As such, minimum scale distortion will occur along these standards.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>params  <span class="ot">&lt;-</span> <span class="fu">ti.out</span>(<span class="at">proj.out =</span> proj.out, <span class="at">lat =</span> lat, <span class="at">lon =</span> lon, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_length</span>(params<span class="sc">$</span>maja)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Units: [m]
-[1] 1000006 1000005 1000004 1000000 1000000 1000000 1017590 1017590 1017590</code></pre>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="fl">69.5</span>, <span class="at">lat =</span> <span class="dv">30</span>, <span class="at">proj.out =</span> proj.eqdc)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="fl">69.5</span>, <span class="at">lat =</span> <span class="dv">45</span>, <span class="at">proj.out =</span> proj.eqdc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="1056"></p>
 </div>
 </div>
-<p>The output units are those of the projection mapping units–meters in this example.</p>
-<p>For the minimum scale distortions lengths for each TI, type:</p>
+<p>Distortion increases north or south of these parallels. For example:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_length</span>(params<span class="sc">$</span>mina)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Units: [m]
-[1]  999993.6  999994.7  999995.7  992245.2  992245.2  992245.2 1000000.1
-[8] 1000000.0 1000000.1</code></pre>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="fl">69.5</span>, <span class="at">lat =</span> <span class="dv">40</span>, <span class="at">proj.out =</span> proj.eqdc)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">local_TI</span>(<span class="at">long =</span> <span class="sc">-</span><span class="fl">69.5</span>, <span class="at">lat =</span> <span class="dv">50</span>, <span class="at">proj.out =</span> proj.eqdc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Tissot_tutorial_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="1056"></p>
 </div>
 </div>
-<p>To preserve distance scales across the map’s extent, area scale needs to be compromised. Its values can be extracted as follows:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>params<span class="sc">$</span>area</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.0000000 1.0000000 1.0000000 0.9922453 0.9922453 0.9922453 1.0175898
-[8] 1.0175898 1.0175898</code></pre>
-</div>
-</div>
-<p>The area scale ranges from 0.99 to 1.02 within the bounds defined by <code>ll</code> and <code>ur.</code></p>
+<p>Overall, this coordinate system does a good job in preserving distance within the contiguous US with errors well under 2%.</p>
 <hr>
-<p><em>All code in this tutorial were created with the following external libraries</em></p>
+<p><em>Code in this tutorial was created with the following external libraries</em></p>
 <table class="table">
 <tbody>
 <tr class="odd">
