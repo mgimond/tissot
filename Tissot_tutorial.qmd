@@ -3,6 +3,8 @@ title: "Tissot's Indicatrix"
 author: "Manny Gimond"
 format: html
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -519,7 +521,6 @@ out.rast +
                ylim = st_bbox(tsf$base)[c(2,4)])
 ```
 
-
 ## Equidistance conical projection
 
 If distance is an important spatial property for your analysis, you can adopt an equidistant projection.
@@ -549,24 +550,9 @@ out.rast +
 
 ```
 
-Recall that the green lines represent the largest scale measurement and the red line the smallest scale measurement. The distances seem to be consistent at all directions.
 
-We can extract the length of the principal directions from the `tsf` object. For the maximum scale distortion lengths for each indicatrix, type:
 
-```{r}
-params  <- ti.out(proj.out = proj.out, lat = lat, lon = lon, plot = FALSE)
-st_length(params$maja)
-```
-
-The output units are those of the projection mapping units--meters in this example.
-
-For the minimum scale distortions lengths for each TI, type:
-
-```{r}
-st_length(params$mina)
-```
-
-To preserve distance scales across the map's extent, area scale needs to be compromised. Its values can be extracted as follows:
+To preserve distance across the map's extent, area scale needs to be compromised. Its values can be extracted as follows:
 
 ```{r}
 params$area
