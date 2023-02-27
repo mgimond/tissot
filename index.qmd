@@ -22,7 +22,7 @@ When converting spatial features from a geographic coordinate system (GSC) to a 
 
 Nicolas Tissot's *indicatrix* is designed to quantify the level of distortion in a map projection. The idea is to project a small circle (i.e. small enough so that the distortion remains relatively uniform across the circle's extent) and to measure its distorted shape on the projected map.
 
-For example, the following figure shows the distorted circles at different locations in the continental US when presented in a Mollweide projection centered in the middle on the 48 states.
+For example, the following figure shows the distorted circles at different locations in North America when presented in a Mollweide projection whose central meridian is centered in the middle on the 48 states at 100&deg;W.
 
 ```{r echo=FALSE, fig.height=4, fig.width=5}
 library(sf)
@@ -40,7 +40,7 @@ us.crs <- st_crs(us)
 st_geometry(us) <- st_geometry(us) + c(-360, 0) 
 st_crs(us) <- us.crs
 
-proj.out <- "+proj=moll +lon_0=-96 +x_0=0 +y_0=0 +datum=WGS84"
+proj.out <- "+proj=moll +lon_0=-100 +x_0=0 +y_0=0 +datum=WGS84"
 
 # Multipoint coordinate
 lat <- seq(15,60, by=10L)
@@ -76,16 +76,15 @@ tsf <- tissot_sf(i.lst, proj.out)
 
 ```
 
-Let's explore a Tissot indicatrix (TI) in more detail.
+Let's explore a Tissot indicatrix (TI) in more detail at 125&deg;W and 60&deg;N in the Mollweide projection.
 
 ```{r echo=FALSE, fig.height=4, fig.width=5}
-#proj.out <- "+proj=gnom +lon_0=-110 +lat_0=30"
-TI <- local_TI(-140, 60, proj.out = proj.out)
+TI <- local_TI(-125, 60, proj.out = proj.out)
 ```
 
 The **red distorted ellipse** (the indicatrix) is the transformed circle in this particular projection (`r proj.out`). The **green** and **red** lines show the magnitude and direction of the ellipse's major and minor axes respectively. If these axes are not equal (i.e. if the ellipse has a non-zero eccentricity), the projection is said *not* to be **conformal** at this location. These lines can also be used to assess scale distortion which can vary as a function of bearing as seen in this example. The green line shows maximum scale distortion and the red line shows minimum scale distortion--these are sometimes referred to as the **principal directions**. In this working example, the principal directions are `r round(TI$max.scale,3)` and `r round(TI$min.scale,3)` respectively. A scale value of `1` indicates no distortion. A value less than `1` indicates a smaller-than-true scale and a value greater than `1` indicates a greater-than-true scale.
 
-Not only can shape be distorted, but its **area** can be as well. The bisque colored circle at the center of the ellipse represents a **base circle** as represented by this Mollweide projection. It's much smaller than the indicatrix. The indicatrix is `r round(TI$scale.area,3)` times greater than the base circle. In other words, an area will be exaggerated `r round(TI$scale.area,3)` times at this location given this projection.
+Not only can shape be distorted, but its **area** can be as well. The bisque colored circle at the center of the ellipse represents a **base circle** as represented by this Mollweide projection. It's  smaller than the indicatrix. The indicatrix is about `r round(TI$scale.area,3)` times smaller than the base circle. In other words, an area will be exaggerated `r round(TI$scale.area,3)` times at this location given this projection.
 
 Other features of this indicatrix include The **north-south** grey line which is aligned with the meridian and the **east-west** grey line which is aligned with the parallel. These lines are used to assess if meridians and parallels intersect at right angles.
 
@@ -103,7 +102,7 @@ library(ggplot2)
 source("https://raw.githubusercontent.com/mgimond/tissot/master/Tissot_functions.R")
 ```
 
-This tutorial will also make use of a few base layers used as a reference.
+This tutorial will also make use of a few base layers that will be used as a reference.
 
 ```{r eval = FALSE}
 world <-  readRDS(gzcon(url("https://github.com/mgimond/tissot/raw/master/smpl_world.rds")))
@@ -117,11 +116,11 @@ st_crs(us) <- us.crs
 
 ### Defining a few projections
 
-In this next chunk of code, we'll create a few projection objects for use later in this tutorial.
+In this next code chunk, we'll create a few projection objects for use later in this tutorial.
 
-> Note 1: PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that WKT format is now becoming a preferred projection format.
+> Note 1: PROJ string syntax is used to define projections in this tutorial. This may generate warnings when running some R scripts given that [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems) format is now becoming a preferred projection format.
 
-> Note 2: Modifying a projection's tangent or secant coordinate values may result in distorted base maps and/or errors in the underlying modified geometry.
+> Note 2: Modifying a projection's tangent or secant coordinate values may result in distorted base maps and/or errors in the underlying modified geometry if the new projection forces a merging of vector layers across the date line.
 
 ```{r}
 proj.rob    <- "+proj=robin +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84" # Robinson
@@ -275,15 +274,15 @@ Note the flattening of features as one progresses pole-ward. This compensates fo
 ti.maine <- local_TI(long = -69.5, lat = 44.5, proj.out = proj.cea)
 ```
 
-The area is indeed preserved, but this comes at a cost. The projection is not conformal except near the equator (this is where the projection makes contact with the earth's spheroid). At the 44.5° the east-west scale is increased by `r round(ti.maine$max.scale,1)` and by `r round(ti.maine$min.scale,1)` along the north-south axis.
+The area is indeed preserved, but this comes at a cost. The projection is not conformal except near the equator (this is where the projection makes contact with the earth's spheroid). At 44.5°N the east-west scale is increased by `r round(ti.maine$max.scale,1)` and the north-south scale is decreased by `r round(ti.maine$min.scale,1)`.
 
 ### Earth-from-space planar projection
 
-Let's explore another family of projections: an orthographic projection.
+Let's explore another family of projections: the orthographic projection.
 
 ```{r fig.height=5, fig.width=6}
-lat <- seq(0, 60, by = 20L)
-lon <- seq(-120, 0, by = 40L)
+lat <- seq(0, 60, by = 15L)
+lon <- seq(-140, 0, by = 35L)
 
 ti.out(proj.out = proj.ortho1, lat = lat, lon = lon)
 ```
@@ -317,7 +316,7 @@ Let's explore one of the TI polygons in greater detail. We'll zoom in on (60°N,
 ti_lcc <- local_TI(long = -130, lat = 60, proj.out = proj.lcc)
 ```
 
-The TI appears circular suggestion that shape is preserved. We can quantify the distortion in shape by extracting the angle between the parallel and meridian lines at the `TI`'s center from the `ti_lcc` object (these are shown as the two dashed lines in the `TI`). A conformal projection is one that preserves angle, so we would expect a value of 90° between the two reference lines.
+The principal directions (smallest and largest axes) are equal suggestion that shape is preserved. Another way we can quantify the distortion in shape is by extracting the angle between the parallel and meridian lines at the `TI`'s center from the `ti_lcc` object (these are shown as the two grey lines in the `TI`). A conformal projection is one that preserves angle, so we would expect a value of 90° between the two reference lines.
 
 ```{r}
 ti_lcc[[12]][3]  # Extract the intersecting angle
@@ -341,7 +340,7 @@ ti_lcc$min.scale
 
 We can generate a continuous (raster) surface of areal scale values. This can prove helpful in visualizing the distortion associated with the PCS across the *whole* map extent.
 
-We'll first create a custom function whereby areal scales less than one will be assigned a red hue, areal scales greater than one will be assigned a blueish hue, and scales close to one will be assigned a yellow hue.
+We'll first create a custom function whereby areal scales less than one will be assigned a **red hue**, areal scales greater than one will be assigned a **blueish hue**, and scales close to one will be assigned a **yellow hue**.
 
 ```{r raster_tissot_function}
 library(raster)
@@ -407,9 +406,7 @@ We'll extend our analysis of the orthographic projection from the last section.
 ```{r fig.height=4, fig.width=6, cache=TRUE}
 ll <- c(xmin = -120, ymin = -20)
 ur <- c(xmax = 40, ymax = 60)
- 
-# Create raster map (remove default graticule which is problematic for this
-# projection)
+
 r.out(ll, ur, proj.ortho1, plot = TRUE)
 ```
 
@@ -417,7 +414,7 @@ This orthographic projection has a true scale centered at 69° West and and 45°
 
 ### UTM projection
 
-Next, we'll modify the previous chunk of code for use with a UTM coordinate system and limit the extent to the State of Maine (USA). This will help us visualize the north-south strips of the projection where scale is close to 1 (this location coincides with UTM's two standard lines).
+Next, we'll explore a UTM coordinate system (Zone 19 North) and limit the extent to the State of Maine (USA). This will help us visualize the north-south strips of the projection where scale is close to 1 (this location coincides with UTM's two standard lines).
 
 ```{r fig.height=4, fig.width=6, cache = TRUE}
 ll <- c(xmin = -73, ymin = 43)
@@ -427,15 +424,16 @@ r.out(ll, ur, proj.utm19N, bgmap = us) + # Map with US outline
   geom_vline( xintercept = c(680000,320000), linetype = 2 ) # Add standard parallels
 ```
 
-The UTM projection adopts a [secant projection](https://mgimond.github.io/Spatial/chp09_0.html#cylindrical-projection) whereby the cylindrical projection *contacts* the earth at two standard lines (shown as dashed lines in the above figure). As such, the areal scale at the two standard lines is close to one whereas at the projection's central meridian (69°W). The standard lines are about 360 km from one another. Note that the standard parallels do not follow meridians.
+The UTM projection adopts a [secant projection](https://mgimond.github.io/Spatial/chp09_0.html#cylindrical-projection) whereby the cylindrical projection *contacts* the earth at two standard lines (shown as dashed lines in the above figure). As such, the areal scale at the two standard lines is one whereas at the projection's central meridian (69°W) scale decreases by a small amount (less than 2%). The standard lines are about 360 km from one another. Note that the standard parallels do not follow meridians.
 
 ### Plate Carrée projection
 
-A popular cylindrical coordinate system adopted as a standard projection for geographic data in GIS software like ArcMap and QGIS is the Plate Carrée projection (or a derivative thereof). We'll modify the previous chunk once again.
+A popular cylindrical coordinate system adopted as a standard projection for geographic data in GIS software like ArcMap and QGIS is the Plate Carrée projection (or a derivative thereof). 
 
 ```{r fig.height=4, fig.width=10, cache = TRUE}
 ll <- c(xmin = -170, ymin = -85)
 ur <- c(xmax = 170, ymax = 80)
+
 r.out(ll, ur, proj.carree) 
 ```
 
@@ -443,7 +441,7 @@ The scale is nearly unity at the equator and increases as one moves poleword.
 
 ### Equal-area projection
 
-Now let's revisit the equal area projection. The Tissot indicatrix suggested that the projection did not preserve shape in an earlier example. A single Tissot indicatrix was generated at a 45° latitude suggesting that area was unaffected. Let's generate an areal distortion raster to explore the extent of equal area projection.
+Now let's revisit the equal area projection. Let's generate an areal distortion raster to explore the extent of equal area projection.
 
 ```{r fig.height=3, fig.width=11, cache = TRUE}
 ll <- c(xmin = -170, ymin = -85)
@@ -456,7 +454,7 @@ The map makes it clear that the areal scale remains true (to at least 3 decimal 
 
 # Combining indicatrix with areal scale factor raster
 
-Next, we'll overlap indicatrix ellipses with areal scale factor rasters. This will allow us to view both distortion on shape and length scale as well as area.
+Next, we'll overlap indicatrix ellipses with areal scale factor rasters. This will allow us to view distortions in shape and length at point locations as well as distortion in area across the entire extent.
 
 ## Equal-area projection
 
@@ -488,7 +486,7 @@ While the area scale remains true across the map's extent, its shape clearly doe
 
 ## Gnomonic projection
 
-One interesting coordinate system is the gnomonic projection. This projection is unique in that great circles (shortest distance on an ellipsoid) from the center of the projection map to a straight line. In other words, the shortest distance between to points on this projected map is the true great circle distance. The following map is that of a gnomonic projection centered at 30° North and 100° West.
+One interesting projection is the gnomonic projection. This projection is unique in that great circles (shortest distance on an ellipsoid) from the center of the projection map to a straight line. In other words, the shortest distance between to points on this projected map is the true great circle distance. The following map is that of a gnomonic projection centered at 30° North and 100° West.
 
 ```{r fig.height=7, fig.width=6, cache = TRUE}
 ll <- c(xmin = -130, ymin = 0)
@@ -542,7 +540,7 @@ out.rast +
 
 ```
 
-This projection adopts a secant case in that two standard parallel are used to define where the projection makes contact with the underlying spheroid. As such, minimum scale distortion will occur along these standards.
+This projection adopts a secant case in that two standard parallels (30&deg;N and 45&deg;N) are used to define where the projection makes contact with the underlying spheroid. As such, minimum scale distortion will occur along these standards.
 
 ```{r echo=2:3, fig.width=11}
 OP <- par(mfrow=c(1,2))   
@@ -560,7 +558,7 @@ out <- local_TI(long = -69.5, lat = 50, proj.out = proj.eqdc)
 par(OP)
 ```
 
-Overall, this coordinate system does a good job in preserving distance within the contiguous US with errors well under 2%.
+Overall, this coordinate system does a decent job in limiting distance errors to 2% within the contiguous 48 states.
 
 ------------------------------------------------------------------------
 
